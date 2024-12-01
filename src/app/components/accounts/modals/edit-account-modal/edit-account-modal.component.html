@@ -1,0 +1,41 @@
+<div class="container">
+    <h2 mat-dialog-title class="text-center">Edit Bank Account</h2>
+
+    <mat-dialog-content class="d-flex flex-column align-items-center">
+        <p class="text-center">Edit the bank account details.</p>
+
+        <form [formGroup]="bankAccountForm">
+            <!-- Customer CIN Field -->
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Customer CIN</mat-label>
+                <input matInput type="text" placeholder="Customer CIN" formControlName="customerCin" />
+                <mat-error *ngIf="bankAccountForm.get('customerCin')?.hasError('required')">
+                    Customer CIN is required.
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Account Status Field -->
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status">
+                    <mat-option value="CREATED">Created</mat-option>
+                    <mat-option value="SUSPENDED">Suspended</mat-option>
+                    <mat-option value="ACTIVATED">Activated</mat-option>
+                </mat-select>
+                <mat-error *ngIf="bankAccountForm.get('status')?.hasError('required')">
+                    Account status is required.
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Account Type Field -->
+
+        </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="d-flex justify-content-center">
+        <button class="btn me-2" mat-button mat-dialog-close>Cancel</button>
+        <button class="btn" mat-button [disabled]="bankAccountForm.invalid" (click)="onSubmit()">
+            Save Changes
+        </button>
+    </mat-dialog-actions>
+</div>

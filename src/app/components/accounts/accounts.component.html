@@ -1,0 +1,108 @@
+<div class="container">
+
+    <div class="table-title">
+        <div class="row">
+            <div class="col-sm-4">
+                <h2>Account<b> managment</b></h2>
+            </div>
+            <div *ngIf="auth.hasAuthority('VIEW_ACCOUNT')" class="col-md-3">
+                <form [formGroup]="searchFormGroup" (ngSubmit)="getAccounts(1)" *ngIf="searchFormGroup">
+                    <input class="form-control my-2" type="text" formControlName="keyword" placeholder="Search by CIN">
+                </form>
+
+            </div>
+
+            <div class="col-sm-5" *ngIf="auth.hasAuthority('ADD_ACCOUNT') && auth.hasAuthority('DELETE_ACCOUNT')">
+
+                <a (click)="openDialog()" class="btn btn-success my-2"><i class="bi bi-plus-circle-fill"></i>
+                </a>
+                <a class="btn btn-danger my-2" (click)="multipleDeleteAccounts()"><i class="bi bi-trash"></i> </a>
+
+
+            </div>
+        </div>
+    </div>
+    <ng-container *ngIf="accounts && accounts.length > 0; else failureOrLoading">
+        <div class="table-responsive" *ngIf="auth.hasAuthority('VIEW_ACCOUNT')">
+            <div class="table-wrapper">
+
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll" [checked]="selectAll"
+                                        (change)="handleSelectAllRows()">
+                                    <label for="selectAll"></label>
+                                </span>
+                            </th>
+                            <th>ID</th>
+                            <th>Creation Date</th>
+                            <th>Type</th>
+                            <th>Balance</th>
+                            <th>overDraft/interestRate</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <tr *ngFor="let c of accounts ">
+                            <td>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" name="options" [value]="c.id"
+                                        [checked]=" selectedRowsId.includes(c.id)" (change)="handleSelectRow(c.id)">
+                                    <label for="checkbox1"></label>
+                                </span>
+                            </td>
+                            <td>{{c.id.toUpperCase()}}</td>
+                            <td>{{ c.createdAt| date:'yyyy-MM-dd' }}</td>
+                            <td>{{c.type}}</td>
+                            <td>{{c.balance}}</td>
+                            <td>{{c.overDraft != undefined ? c.overDraft+" DH":c.interestRate+" %"}}</td>
+                            <td>
+                                <a *ngIf="auth.hasAuthority('VIEW_OPERATION')" class="view"
+                                    (click)="onViewAccount(c)"><i class="bi bi-eye"></i></a>
+                                <a *ngIf="auth.hasAuthority('ADD_OPERATION')" class="view"
+                                    (click)="accountOperation(c)"><i class="bi bi-gear-fill"></i></a>
+                                <a *ngIf="auth.hasAuthority('EDIT_ACCOUNT')" class="edit" (click)="onEditAccount(c)"><i
+                                        class="bi bi-pencil"></i></a>
+                                <a *ngIf="auth.hasAuthority('DELETE_ACCOUNT')" class="delete"
+                                    (click)="handleDeleteAccount(c)"><i class="bi bi-trash"></i></a>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="clearfix" *ngIf="auth.hasAuthority('VIEW_ACCOUNT')">
+
+            <div class="hint-text">page <b>{{currentPage}}</b> of <b>{{totalPage}}</b> </div>
+            <ul class="pagination">
+                <li class="page-item change-page  " [ngClass]="{ 'disabled': currentPage === 1 }"
+                    (click)="PreviousPage()"><a class="page-link ">Previous</a></li>
+
+                <li class="page-item active"><a class="page-link">{{currentPage}}</a></li>
+
+                <li class="page-item change-page " [ngClass]="{ 'disabled': currentPage === totalPage }"
+                    (click)="nextPage()"><a class="page-link ">Next</a></li>
+            </ul>
+        </div>
+    </ng-container>
+
+    <ng-template #failureOrLoading>
+        <ng-container *ngIf="errorMessage || accounts.length==0; else spinner">
+            <div class="d-flex justify-content-center align-items-center"
+                style="height: 200px; border: 1px solid #ccc;">
+                No element to show
+            </div>
+        </ng-container>
+        <ng-template #spinner>
+            <div class="loading-spinner">
+                <mat-spinner [diameter]="50"></mat-spinner>
+            </div>
+        </ng-template>
+    </ng-template>
+
+</div>
